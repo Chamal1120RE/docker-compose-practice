@@ -1,0 +1,60 @@
+name: notes-docker-compose
+
+# Services
+services:
+  # Database service
+  mongo:
+    image: mongo:latest
+    container_name: mongodb_server
+    ports:
+      - "27017:27017"
+    env_file: .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASS}
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - mynetwork
+  
+  # Server Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend_cont
+    ports:
+      - "5000:5000"
+    env_file: .env
+    environment:
+      - BK_PORT=${BK_PORT}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_HOST=mongo
+      - DB_NAME=${DB_NAME}
+    depends_on:
+      - mongo
+    networks:
+      - mynetwork
+  
+  # Client service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend_cont
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - mynetwork
+
+# Define volume
+volumes:
+  mongo_data:
+
+networks:
+  mynetwork:
+
