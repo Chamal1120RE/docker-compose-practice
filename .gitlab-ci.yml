@@ -1,0 +1,35 @@
+stages:
+  - build
+  - deploy 
+
+variables: 
+  DOCKER_IMAGE: "registry.gitlab.com/chamal1120/notes-app"
+  TAG: "latest"
+  SSH_PRIVATE_KEY: $CI_SSH_PRIVATE_KEY
+  EC2_USER: "ec2-user"
+  EC2_HOST: "13.60.12.226"
+  COMPOSE_FILE: "docker-compose.yml"
+
+before_script:
+  - apk add --no-cache sshpass
+  - echo "$SSH_PRIVATE_KEY" > private_key.pem
+  - chmod 600 private_key.pem
+
+build:
+  stage: build
+  script:
+    - docker login -u "$DOCKER_REGISTRY_USER" -p "$DOCKER_REGISTRY_PASSWORD" registry.gitlab.com
+    - docker-compose -f $COMPOSE_FILE build
+    - docker tag your-notes-app:latest $DOCKER_IMAGE:$TAG
+    - docker push $DOCKER_IMAGE:$TAG
+
+deploy:
+  stage: deploy
+  script:
+    - ssh -i private_key.pem $EC2_USER@$EC2_HOST << 'EOF'
+        cd /path/to/your/app
+        docker login -u "$DOCKER_REGISTRY_USER" -p "$DOCKER_REGISTRY_PASSWORD" registry.gitlab.com
+        docker-compose pull
+        docker-compose up -d
+      EOF
+  
