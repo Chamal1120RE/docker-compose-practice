@@ -31,6 +31,20 @@ Note: On some computers with Docker Desktop `docker-compose` might have aliased 
 `localhost:80` - nginx server (frontend server) <br>
 `localhost:5000/api/notes` - backend server
 
+4. You can view the running containers using `docker ps` command
+
+5. Once you have the container ID or name, you can log in to the container using docker exec. The typical way is to start a shell session (bash or sh) within the container:
+
+For containers with Bash installed:
+
+```bash
+docker exec -it <container_id_or_name> bash
+```
+For containers without Bash (using sh as a fallback):
+
+```bash
+docker exec -it <container_id_or_name> sh
+```
 
 ## The one challenge I faced during this
 
