@@ -1,6 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");
+// const cors = require("cors");
 const dotenv = require("dotenv");
 const app = express();
 
@@ -13,10 +13,10 @@ const PORT = BK_PORT || 5000;
 const MONGO_URI = `mongodb://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?authSource=admin`;
 
 
-app.use(cors({
-    origin: 'http://localhost', // or whatever your frontend URL is
-    methods: ['GET', 'POST'],
-}));
+// app.use(cors({
+//     origin: 'http://localhost', // or whatever your frontend URL is
+//     methods: ['GET', 'POST'],
+// }));
 
 app.use(express.json());
 
