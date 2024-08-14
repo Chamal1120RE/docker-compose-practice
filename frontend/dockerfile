@@ -1,25 +1,29 @@
-# Use Node.js image for the build stage
+# Get Node v20 image as the build stage
 FROM node:20 AS build-stage
 
+# Create working directory
 WORKDIR /app
 
-# Install dependencies
+# Install the dependancies
 COPY package.json pnpm-lock.yaml ./
 RUN npm install -g pnpm
-RUN pnpm install
+RUN pnpm i
 
-# Copy the rest of the files and build the frontend
+# Copy the rest of the files
 COPY . .
+
+# Build
 RUN pnpm run build
 
-# Use Nginx for serving the built files
+# Get the nginx image
 FROM nginx:1.21
 
-# Copy the built files from the build stage
+# Copy the built files to nginx image
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 
-# Copy the Nginx configuration files
+# Copy the Nginx configuration file
 COPY nginx.conf /etc/nginx/nginx.conf
 
+# Expose the nginx server to the port 80
 EXPOSE 80
 
